@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="MariaDb" database="MariaDb" id="15a3d769-d7de-4869-b126-b2ee056dac85" >
+	<schema name="fcrm" >
+		<table name="_borrar_usertype" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="name" type="VARCHAR" length="50" mandatory="y" />
+			<index name="pk__borrar_usertype" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="category" generator_rows="100" row_count="0" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<index name="pk_category" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="city" generator_rows="337" row_count="0" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="stateId" type="BIGINT" length="20" mandatory="y" />
+			<column name="name" type="VARCHAR" length="100" mandatory="y" />
+			<column name="isActive" type="BIT" length="1" />
+			<column name="isDeleted" type="BIT" length="1" />
+			<column name="createDate" type="DATETIME" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_city" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="city_country_FK" unique="NORMAL" >
+				<column name="stateId" />
+			</index>
+			<fk name="fk_city_state" to_schema="fcrm" to_table="state" >
+				<fk_column name="stateId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="contact_type" generator_rows="100" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="name" type="VARCHAR" length="50" mandatory="y" />
+			<index name="pk_contact_type" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="country" generator_rows="150" row_count="2" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="iso2Code" type="VARCHAR" length="2" mandatory="y" />
+			<column name="iso3Code" type="VARCHAR" length="3" />
+			<column name="name" type="VARCHAR" length="50" mandatory="y" />
+			<column name="_borrar_personalDocumentName" type="VARCHAR" length="50" />
+			<column name="_borrar_personalDocumentFormat" type="VARCHAR" length="20" />
+			<column name="_borrar_commercialDocumentName" type="VARCHAR" length="50" />
+			<column name="_borrar_commercialDocumentFormat" type="VARCHAR" length="20" />
+			<column name="mobilePhoneFormat" type="VARCHAR" length="20" />
+			<column name="fixedPhoneFormat" type="VARCHAR" length="20" />
+			<column name="phonePrefix" type="VARCHAR" length="10" />
+			<column name="isActive" type="BIT" length="1" />
+			<column name="phoneDigitsToRemove" type="INT" length="2" />
+			<column name="currencyId" type="BIGINT" length="20" />
+			<column name="isDeleted" type="BIT" length="1" />
+			<column name="createDate" type="DATETIME" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_country" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="UQ_Nombre" unique="UNIQUE_KEY" >
+				<column name="name" />
+			</index>
+			<index name="fk_country_currency" unique="NORMAL" >
+				<column name="currencyId" />
+			</index>
+			<fk name="fk_country_currency" to_schema="fcrm" to_table="currency" >
+				<fk_column name="currencyId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="country_document" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="countryId" type="BIGINT" length="20" />
+			<column name="documentTypeId" type="BIGINT" length="20" />
+			<column name="name" type="VARCHAR" length="50" />
+			<column name="format" type="VARCHAR" length="20" />
+			<index name="pk_country_document" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="country_document_unique" unique="UNIQUE_KEY" >
+				<column name="countryId" />
+				<column name="documentTypeId" />
+			</index>
+			<index name="fk_country_document_document_type" unique="NORMAL" >
+				<column name="documentTypeId" />
+			</index>
+			<fk name="fk_country_document_country" to_schema="fcrm" to_table="country" >
+				<fk_column name="countryId" pk="id" />
+			</fk>
+			<fk name="fk_country_document_document_type" to_schema="fcrm" to_table="document_type" >
+				<fk_column name="documentTypeId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="currency" generator_rows="100" row_count="3" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="code" type="VARCHAR" length="3" />
+			<column name="name" type="VARCHAR" length="20" />
+			<column name="symbol" type="VARCHAR" length="5" />
+			<column name="decimalPlaces" type="INT" length="11" >
+				<defo><![CDATA[2]]></defo>
+			</column>
+			<column name="isActive" type="BIT" length="1" >
+				<defo><![CDATA[1]]></defo>
+			</column>
+			<index name="pk_currency" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="data_changes" generator_rows="100" row_count="0" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="tableName" prior="TableName" type="VARCHAR" length="50" />
+			<column name="fieldName" prior="FieldName" type="VARCHAR" length="50" />
+			<column name="pkValue" type="BIGINT" length="20" />
+			<column name="action" prior="Action" type="VARCHAR" length="10" />
+			<column name="dataType" prior="DataType" type="VARCHAR" length="10" />
+			<column name="oldValue" prior="OldValue" type="TEXT" />
+			<column name="newValue" prior="NewValue" type="TEXT" />
+			<column name="Date" type="TIMESTAMP" />
+			<column name="userId" prior="UserId" type="BIGINT" length="20" />
+			<index name="pk_data_changes" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="document_type" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="name" type="VARCHAR" length="50" mandatory="y" />
+			<index name="pk_document_type" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="entity" generator_rows="225" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="uuid" type="TEXT" mandatory="y" >
+				<defo><![CDATA['uuid()']]></defo>
+			</column>
+			<column name="entityTypeId" type="BIGINT" length="20" />
+			<column name="name" type="VARCHAR" length="150" />
+			<column name="countryId" type="BIGINT" length="20" />
+			<column name="documentTypeId" type="BIGINT" length="20" />
+			<column name="documentNumber" type="VARCHAR" length="20" />
+			<column name="_borrar_emailAddress" type="VARCHAR" length="100" />
+			<column name="_borrar_phoneNumber" type="VARCHAR" length="20" />
+			<column name="hasImported" type="BIT" length="1" />
+			<column name="comments" type="VARCHAR" length="1000" />
+			<column name="isContractSigned" type="BIT" length="1" />
+			<column name="contractFile" type="VARCHAR" length="100" />
+			<column name="isDeleted" type="BIT" length="1" />
+			<column name="createDate" type="DATETIME" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_entity" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="UQ_UUID" unique="UNIQUE_KEY" >
+				<column name="uuid" />
+			</index>
+			<index name="persona_pais_FK" unique="NORMAL" >
+				<column name="countryId" />
+			</index>
+			<index name="fk_entity_document_type" unique="NORMAL" >
+				<column name="documentTypeId" />
+			</index>
+			<fk name="persona_pais_FK" to_schema="fcrm" to_table="country" >
+				<fk_column name="countryId" pk="id" />
+			</fk>
+			<fk name="fk_entity_document_type" to_schema="fcrm" to_table="document_type" >
+				<fk_column name="documentTypeId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="entity__entity_type" generator_rows="337" spec="" >
+			<column name="entityId" type="BIGINT" length="20" mandatory="y" />
+			<column name="entityTypeId" type="BIGINT" length="20" mandatory="y" />
+			<column name="createDate" type="DATETIME" />
+			<column name="isActive" type="BIT" length="1" />
+			<column name="isDeleted" type="BIT" length="1" />
+			<index name="pk_entity__entity_type" unique="PRIMARY_KEY" >
+				<column name="entityId" />
+				<column name="entityTypeId" />
+			</index>
+			<index name="fk_entity__entity_type_entity_type" unique="NORMAL" >
+				<column name="entityTypeId" />
+			</index>
+			<fk name="fk_entity__entity_type_entity" to_schema="fcrm" to_table="entity" >
+				<fk_column name="entityId" pk="id" />
+			</fk>
+			<fk name="fk_entity__entity_type_entity_type" to_schema="fcrm" to_table="entity_type" >
+				<fk_column name="entityTypeId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="entity_address" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="entityId" type="BIGINT" length="20" mandatory="y" />
+			<column name="cityId" type="BIGINT" length="20" mandatory="y" />
+			<column name="addressLine1" type="VARCHAR" length="200" mandatory="y" />
+			<column name="addressLine2" type="VARCHAR" length="200" />
+			<column name="postalCode" type="VARCHAR" length="20" />
+			<column name="addressType" type="VARCHAR" length="20" mandatory="y" >
+				<defo><![CDATA['MAIN']]></defo>
+			</column>
+			<column name="isPrimary" type="BIT" length="1" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="isActive" type="BIT" length="1" mandatory="y" >
+				<defo><![CDATA[1]]></defo>
+			</column>
+			<column name="isDeleted" type="BIT" length="1" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="createDate" type="DATETIME" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_entity_address" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="ix_entity_address_entityId" unique="NORMAL" >
+				<column name="entityId" />
+			</index>
+			<index name="ix_entity_address_cityId" unique="NORMAL" >
+				<column name="cityId" />
+			</index>
+			<fk name="fk_entity_address_city" to_schema="fcrm" to_table="city" >
+				<fk_column name="cityId" pk="id" />
+			</fk>
+			<fk name="fk_entity_address_entity" to_schema="fcrm" to_table="entity" >
+				<fk_column name="entityId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="entity_contact" generator_rows="337" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="entityId" type="BIGINT" length="20" />
+			<column name="contactTypeId" type="BIGINT" length="20" />
+			<column name="isPrimary" type="BIT" length="1" />
+			<column name="comment" type="VARCHAR" length="100" />
+			<column name="isActive" type="BIT" length="1" />
+			<column name="contact" type="VARCHAR" length="100" />
+			<index name="pk_entity_contact" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="fk_entity_contact_entity" unique="NORMAL" >
+				<column name="entityId" />
+			</index>
+			<index name="fk_entity_contact_contact_type" unique="NORMAL" >
+				<column name="contactTypeId" />
+			</index>
+			<fk name="fk_entity_contact_entity" to_schema="fcrm" to_table="entity" >
+				<fk_column name="entityId" pk="id" />
+			</fk>
+			<fk name="fk_entity_contact_contact_type" to_schema="fcrm" to_table="contact_type" >
+				<fk_column name="contactTypeId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="entity_type" generator_rows="100" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="name" type="VARCHAR" length="50" mandatory="y" />
+			<index name="pk_entity_type" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="entity_user" generator_rows="337" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="uuid" type="TEXT" mandatory="y" >
+				<defo><![CDATA['uuid()']]></defo>
+			</column>
+			<column name="entityId" type="BIGINT" length="20" mandatory="y" />
+			<column name="entityTypeId" type="BIGINT" length="20" mandatory="y" />
+			<column name="username" type="VARCHAR" length="100" mandatory="y" />
+			<column name="pwdHash" type="VARCHAR" length="500" />
+			<column name="createDate" type="DATETIME" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<column name="isActivated" type="BIT" length="1" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="isBlocked" type="BIT" length="1" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="isDeleted" type="BIT" length="1" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<index name="pk_entity_user" unique="PRIMARY_KEY" options="USING BTREE" >
+				<column name="id" />
+			</index>
+			<index name="UQ_Usuario" unique="UNIQUE_KEY" >
+				<column name="username" />
+			</index>
+			<index name="UQ_UUIDUsuario" unique="UNIQUE_KEY" >
+				<column name="uuid" />
+			</index>
+			<index name="user_person_type_UQ" unique="UNIQUE_KEY" >
+				<column name="entityId" />
+				<column name="entityTypeId" />
+			</index>
+			<index name="user_usertype_fk" unique="NORMAL" >
+				<column name="entityTypeId" />
+			</index>
+			<fk name="FK_Usuario_PersonaId" to_schema="fcrm" to_table="entity" >
+				<fk_column name="entityId" pk="id" />
+			</fk>
+			<fk name="user_usertype_fk" to_schema="fcrm" to_table="_borrar_usertype" >
+				<fk_column name="entityTypeId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="entity_user__preferences" generator_rows="505" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="entityUserId" type="BIGINT" length="20" />
+			<column name="key" type="VARCHAR" length="20" />
+			<column name="value" type="VARCHAR" length="100" />
+			<index name="pk_entity_user__preferences" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="fk_entity_user__preferences_entity_user" unique="NORMAL" >
+				<column name="entityUserId" />
+			</index>
+			<fk name="fk_entity_user__preferences_entity_user" to_schema="fcrm" to_table="entity_user" >
+				<fk_column name="entityUserId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="entity_user__role" generator_rows="505" spec="" >
+			<column name="userId" type="BIGINT" length="20" mandatory="y" />
+			<column name="roleId" type="BIGINT" length="20" mandatory="y" />
+			<index name="pk_entity_user__role" unique="PRIMARY_KEY" >
+				<column name="userId" />
+				<column name="roleId" />
+			</index>
+			<index name="FK_Rol" unique="NORMAL" >
+				<column name="roleId" />
+			</index>
+			<fk name="fk_entity_user__role_entity_user" to_schema="fcrm" to_table="entity_user" >
+				<fk_column name="userId" pk="id" />
+			</fk>
+			<fk name="fk_entity_user__role_role" to_schema="fcrm" to_table="role" >
+				<fk_column name="roleId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="event" generator_rows="100" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="eventTypeId" type="BIGINT" length="20" />
+			<column name="name" type="VARCHAR" length="50" />
+			<column name="date" type="DATETIME" />
+			<index name="pk_event" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="fk_event_event_type" unique="NORMAL" >
+				<column name="eventTypeId" />
+			</index>
+			<fk name="fk_event_event_type" to_schema="fcrm" to_table="event_type" >
+				<fk_column name="eventTypeId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="event__expense" generator_rows="150" spec="" >
+			<column name="eventId" type="BIGINT" length="20" mandatory="y" />
+			<column name="expenseId" type="BIGINT" length="20" mandatory="y" />
+			<index name="pk_event__expense" unique="PRIMARY_KEY" >
+				<column name="eventId" />
+				<column name="expenseId" />
+			</index>
+			<index name="fk_event__expense_expense" unique="NORMAL" >
+				<column name="expenseId" />
+			</index>
+			<fk name="fk_event__expense_event" to_schema="fcrm" to_table="event" >
+				<fk_column name="eventId" pk="id" />
+			</fk>
+			<fk name="fk_event__expense_expense" to_schema="fcrm" to_table="expense" >
+				<fk_column name="expenseId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="event_type" generator_rows="100" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="name" type="VARCHAR" length="50" />
+			<index name="pk_event_type" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="expense" generator_rows="100" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="name" type="VARCHAR" length="50" />
+			<column name="description" type="VARCHAR" length="1000" />
+			<index name="pk_expense" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="logistic" generator_rows="100" row_count="0" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<index name="pk_logistic" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="permission" generator_rows="100" row_count="0" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="code" type="VARCHAR" length="20" mandatory="y" />
+			<column name="name" type="VARCHAR" length="500" mandatory="y" />
+			<index name="pk_permission" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="UQ_CodPermiso" unique="UNIQUE_KEY" >
+				<column name="code" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="product" generator_rows="100" row_count="4" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="name" type="VARCHAR" length="100" />
+			<column name="price" type="DECIMAL" length="18" decimal="2" />
+			<column name="idCurrency" type="BIGINT" length="20" />
+			<index name="pk_product" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="fk_product_currency" unique="NORMAL" >
+				<column name="idCurrency" />
+			</index>
+			<fk name="fk_product_currency" to_schema="fcrm" to_table="currency" >
+				<fk_column name="idCurrency" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="product_price_history" generator_rows="100" row_count="0" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="productId" type="BIGINT" length="20" />
+			<column name="price" type="DECIMAL" length="18" decimal="2" />
+			<column name="currencyId" type="BIGINT" length="20" />
+			<column name="dateFrom" type="DATE" />
+			<column name="dateTo" type="DATE" />
+			<index name="pk_product_price_history" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="fk_product_price_history_product" unique="NORMAL" >
+				<column name="productId" />
+			</index>
+			<index name="fk_product_price_history_currency" unique="NORMAL" >
+				<column name="currencyId" />
+			</index>
+			<fk name="fk_product_price_history_product" to_schema="fcrm" to_table="product" >
+				<fk_column name="productId" pk="id" />
+			</fk>
+			<fk name="fk_product_price_history_currency" to_schema="fcrm" to_table="currency" >
+				<fk_column name="currencyId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="purchase" generator_rows="100" row_count="0" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="clientId" type="BIGINT" length="20" />
+			<column name="productId" type="BIGINT" length="20" />
+			<column name="price" type="DECIMAL" length="18" decimal="2" />
+			<column name="currencyId" type="BIGINT" length="20" />
+			<column name="purchaseDate" type="DATETIME" />
+			<index name="pk_purchase" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="fk_purchase_product" unique="NORMAL" >
+				<column name="productId" />
+			</index>
+			<index name="fk_purchase_currency" unique="NORMAL" >
+				<column name="currencyId" />
+			</index>
+			<fk name="fk_purchase_product" to_schema="fcrm" to_table="product" >
+				<fk_column name="productId" pk="id" />
+			</fk>
+			<fk name="fk_purchase_currency" to_schema="fcrm" to_table="currency" >
+				<fk_column name="currencyId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="role" generator_rows="100" row_count="3" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="code" type="VARCHAR" length="20" mandatory="y" />
+			<column name="name" type="VARCHAR" length="50" mandatory="y" />
+			<index name="pk_role" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="role__permission" generator_rows="150" spec="" >
+			<column name="roleId" type="BIGINT" length="20" mandatory="y" />
+			<column name="permissionId" type="BIGINT" length="20" mandatory="y" />
+			<index name="pk_role__permission" unique="PRIMARY_KEY" >
+				<column name="roleId" />
+				<column name="permissionId" />
+			</index>
+			<index name="role_permission_permission_fk" unique="NORMAL" >
+				<column name="permissionId" />
+			</index>
+			<fk name="role_permission_permission_fk" to_schema="fcrm" to_table="permission" >
+				<fk_column name="permissionId" pk="id" />
+			</fk>
+			<fk name="role_permission_role_fk" to_schema="fcrm" to_table="role" >
+				<fk_column name="roleId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<table name="state" generator_rows="225" row_count="0" spec="" >
+			<column name="id" type="BIGINT" length="20" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="countryId" type="BIGINT" length="20" mandatory="y" />
+			<column name="name" type="VARCHAR" length="100" mandatory="y" />
+			<index name="pk_state" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="fk_state_country" unique="NORMAL" >
+				<column name="countryId" />
+			</index>
+			<fk name="fk_state_country" to_schema="fcrm" to_table="country" >
+				<fk_column name="countryId" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci]]></options>
+		</table>
+		<view name="v_clients" >
+			<comment><![CDATA[VIEW]]></comment>
+			<view_script><![CDATA[CREATE VIEW ${nameWithSchemaName} AS select `cl`.`id` AS `clientId`,`cl`.`completeName` AS `clientName`,`co`.`name` AS `countryName`,`co`.`idCardName` AS `idCardName`,`cl`.`idCardNumber` AS `idCardNumber`,`co`.`idCardFormat` AS `idCardFormat`,`cl`.`emailAddress` AS `emailAddress`,`cl`.`phoneNumber` AS `phoneNumber`,`co`.`mobilePhoneFormat` AS `mobilePhoneFormat`,`co`.`phonePrefix` AS `phonePrefix`,`co`.`phoneDigitsToRemove` AS `phoneDigitsToRemove`,`cl`.`hasImported` AS `hasImported`,`cl`.`comments` AS `comments`,`cl`.`isContractSigned` AS `isContractSigned`,`cl`.`contractFile` AS `contractFile`,`cl`.`createDate` AS `createDate` from (`fcrm`.`client` `cl` join `fcrm`.`country` `co` on(`co`.`id` = `cl`.`countryId`))]]></view_script>
+			<column name="clientId" type="BIGINT" />
+			<column name="clientName" type="VARCHAR" />
+			<column name="countryName" type="VARCHAR" />
+			<column name="idCardName" type="VARCHAR" />
+			<column name="idCardNumber" type="VARCHAR" />
+			<column name="idCardFormat" type="VARCHAR" />
+			<column name="emailAddress" type="VARCHAR" />
+			<column name="phoneNumber" type="VARCHAR" />
+			<column name="mobilePhoneFormat" type="VARCHAR" />
+			<column name="phonePrefix" type="VARCHAR" />
+			<column name="phoneDigitsToRemove" type="INT" />
+			<column name="hasImported" type="BIT" />
+			<column name="comments" type="VARCHAR" />
+			<column name="isContractSigned" type="BIT" />
+			<column name="contractFile" type="VARCHAR" />
+			<column name="createDate" type="DATETIME" />
+		</view>
+	</schema>
+	<diagram_group name="Default" id="c7567dbc-60ae-49a9-a557-ff27fd9934de" >
+		<diagram name="Main Diagram" id="489266fc-06df-41a5-8d71-98c514d20764" show_relation="columns" >
+			<entity schema="fcrm" name="category" color="BED3F4" x="209" y="285" />
+			<entity schema="fcrm" name="city" color="C7F4BE" x="1596" y="1140" />
+			<entity schema="fcrm" name="contact_type" color="3986C1" x="1634" y="304" />
+			<entity schema="fcrm" name="country" color="C7F4BE" x="1273" y="950" />
+			<entity schema="fcrm" name="country_document" color="3986C1" x="1539" y="760" />
+			<entity schema="fcrm" name="currency" color="BED3F4" x="893" y="893" />
+			<entity schema="fcrm" name="data_changes" color="BED3F4" x="133" y="646" />
+			<entity schema="fcrm" name="document_type" color="3986C1" x="969" y="760" />
+			<entity schema="fcrm" name="entity" color="3986C1" x="1178" y="152" />
+			<entity schema="fcrm" name="entity__entity_type" color="3986C1" x="1653" y="551" />
+			<entity schema="fcrm" name="entity_address" color="3986C1" x="1045" y="171" />
+			<entity schema="fcrm" name="entity_contact" color="3986C1" x="1615" y="114" />
+			<entity schema="fcrm" name="entity_type" color="3986C1" x="1653" y="418" />
+			<entity schema="fcrm" name="entity_user" color="3986C1" x="1444" y="171" />
+			<entity schema="fcrm" name="entity_user__preferences" color="3986C1" x="1425" y="456" />
+			<entity schema="fcrm" name="entity_user__role" color="3986C1" x="1216" y="589" />
+			<entity schema="fcrm" name="event" color="3986C1" x="608" y="893" />
+			<entity schema="fcrm" name="event__expense" color="3986C1" x="418" y="836" />
+			<entity schema="fcrm" name="event_type" color="3986C1" x="608" y="760" />
+			<entity schema="fcrm" name="expense" color="3986C1" x="399" y="627" />
+			<entity schema="fcrm" name="logistic" color="BED3F4" x="95" y="285" />
+			<entity schema="fcrm" name="permission" color="F4DDBE" x="570" y="114" />
+			<entity schema="fcrm" name="product" color="BED3F4" x="57" y="95" />
+			<entity schema="fcrm" name="product_price_history" color="BED3F4" x="266" y="95" />
+			<entity schema="fcrm" name="purchase" color="BED3F4" x="76" y="399" />
+			<entity schema="fcrm" name="role" color="F4DDBE" x="779" y="114" />
+			<entity schema="fcrm" name="role__permission" color="3986C1" x="646" y="323" />
+			<entity schema="fcrm" name="state" color="BED3F4" x="1596" y="969" />
+			<entity schema="fcrm" name="v_clients" color="BED3F4" x="950" y="152" />
+			<group name="entity" color="C4E0F9" >
+				<entity schema="fcrm" name="contact_type" />
+				<entity schema="fcrm" name="entity" />
+				<entity schema="fcrm" name="entity__entity_type" />
+				<entity schema="fcrm" name="entity_contact" />
+				<entity schema="fcrm" name="entity_type" />
+				<entity schema="fcrm" name="entity_user" />
+				<entity schema="fcrm" name="entity_user__preferences" />
+				<entity schema="fcrm" name="entity_user__role" />
+				<entity schema="fcrm" name="v_clients" />
+			</group>
+			<group name="country" color="008000" >
+				<entity schema="fcrm" name="city" />
+				<entity schema="fcrm" name="country" />
+				<entity schema="fcrm" name="country_document" />
+				<entity schema="fcrm" name="state" />
+			</group>
+			<group name="permission" color="808000" >
+				<entity schema="fcrm" name="permission" />
+				<entity schema="fcrm" name="role" />
+				<entity schema="fcrm" name="role__permission" />
+			</group>
+			<group name="event" color="008080" >
+				<entity schema="fcrm" name="event" />
+				<entity schema="fcrm" name="event__expense" />
+				<entity schema="fcrm" name="event_type" />
+				<entity schema="fcrm" name="expense" />
+			</group>
+			<script name="SQL_Editor" id="0f2f5331-1544-4ce6-97bd-2398506e72dc" language="SQL" >
+				<string><![CDATA[ALTER TABLE fcrm.entity_user DROP CONSTRAINT `user_usertype_FK`, ADD CONSTRAINT user_usertype_fk FOREIGN KEY ( `entityTypeId` ) REFERENCES fcrm.`_borrar_usertype`( id ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE fcrm.entity_user__role RENAME INDEX fk_entity_user__role_role TO `FK_Rol`;
+
+ALTER TABLE fcrm.role__permission DROP CONSTRAINT `role_permission_permission_FK`, ADD CONSTRAINT role_permission_permission_fk FOREIGN KEY ( `permissionId` ) REFERENCES fcrm.permission( id ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE fcrm.role__permission DROP CONSTRAINT `role_permission_role_FK`, ADD CONSTRAINT role_permission_role_fk FOREIGN KEY ( `roleId` ) REFERENCES fcrm.role( id ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+]]></string>
+			</script>
+		</diagram>
+	</diagram_group>
+</project>
