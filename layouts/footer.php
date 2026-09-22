@@ -4,6 +4,29 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const toggle = document.getElementById('sidebarToggle');
+
+        if (!toggle) {
+            return;
+        }
+
+        const updateSidebarToggle = function () {
+            const collapsed = document.body.classList.contains('sidebar-collapsed');
+            toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            toggle.setAttribute('aria-label', collapsed ? 'Expandir menú' : 'Contraer menú');
+            toggle.setAttribute('title', collapsed ? 'Expandir menú' : 'Contraer menú');
+        };
+
+        toggle.addEventListener('click', function () {
+            const collapsed = document.body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+            updateSidebarToggle();
+        });
+
+        updateSidebarToggle();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
 
         const tooltipTriggerList =
             document.querySelectorAll('[data-bs-toggle="tooltip"]');

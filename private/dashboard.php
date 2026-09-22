@@ -5,7 +5,7 @@
 
     require_once __DIR__ . '/../config/app.php';
     require_once BASE_PATH . '/includes/auth.php';
-    #requirePermission('DASHBOARD_VIEW');
+    requirePermission('DASHBOARD_VIEW');
 
     #require_once '../config/database.php';
 
@@ -14,7 +14,7 @@
 ?>
 
     <p>
-        <strong>Bienvenido</strong>
+        <strong>Bienvenido <?= htmlspecialchars($_SESSION['entityName'] ?? '') ?></strong>
     </p>
 
 <?php include BASE_PATH . '/layouts/footer.php'; ?>

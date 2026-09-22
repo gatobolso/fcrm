@@ -39,6 +39,7 @@ function loadUserPermissions(PDO $pdo, int $entityUserId): array {
         INNER JOIN role__permission AS rp ON rp.roleId = ur.roleId
         INNER JOIN permission AS p ON p.id = rp.permissionId
         WHERE ur.userId = :userId
+            AND p.isActive = b'1'
     ";
 
     $stmt = $pdo->prepare($sql);

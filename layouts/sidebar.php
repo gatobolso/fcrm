@@ -10,22 +10,34 @@
         return str_contains($currentPath, $path) ? 'active' : '';
     }
 
-    $canViewMasters = 1;
-        #hasPermission('COUNTRY_VIEW')
-        #|| hasPermission('STATE_VIEW')
-        #|| hasPermission('CITY_VIEW')
-        #|| hasPermission('CURRENCY_VIEW')
-        #|| hasPermission('DOCUMENT_TYPE_VIEW')
-        #|| hasPermission('CONTACT_TYPE_VIEW');
+    $canViewMasters = hasPermission('PROVIDER_VIEW')
+        || hasPermission('COUNTRY_VIEW')
+        || hasPermission('STATE_VIEW')
+        || hasPermission('CITY_VIEW')
+        || hasPermission('CURRENCY_VIEW')
+        || hasPermission('DOCUMENT_TYPE_VIEW')
+        || hasPermission('CONTACT_TYPE_VIEW');
 
-    $canViewSecurity = 1;
-        #hasPermission('ROLE_VIEW') ||
-        #hasPermission('PERMISSION_VIEW');
-
-
+    $canViewSecurity = hasPermission('USER_VIEW')
+        || hasPermission('ROLE_VIEW')
+        || hasPermission('PERMISSION_VIEW');
 ?>
 
-<aside class="sidebar p-2">
+<aside id="mainSidebar" class="sidebar p-2">
+    <button
+        type="button"
+        id="sidebarToggle"
+        class="btn btn-sm btn-outline-secondary w-100 mb-2"
+        aria-label="Contraer menú"
+        aria-controls="mainSidebar"
+        aria-expanded="true"
+        data-bs-toggle="tooltip"
+        title="Contraer menú"
+    >
+        <i class="bi bi-layout-sidebar-inset"></i>
+        <span>Menú</span>
+    </button>
+
     <nav aria-label="Navegación principal">
         <ul class="nav nav-pills flex-column gap-1">
             <li class="nav-item">
@@ -35,41 +47,50 @@
                 </a>
             </li>
 
-            <?php #if (hasPermission('CLIENT_VIEW')): ?>
+            <?php if (hasPermission('CLIENT_VIEW')): ?>
                 <li class="nav-item">
                     <a href="<?= BASE_URL ?>/private/entidades/clientes/index.php" class="nav-link">
                         <i class="bi bi-people"></i>
                         <span>Clientes</span>
                     </a>
                 </li>
-            <?php #endif; ?>
+            <?php endif; ?>
 
-            <?php #if (hasPermission('EVENT_VIEW')): ?>
+            <?php if (hasPermission('EVENT_VIEW')): ?>
                 <li class="nav-item">
                     <a href="<?= BASE_URL ?>/private/entidades/usuarios/index.php" class="nav-link">
                         <i class="bi bi-calendar-event"></i>
                         <span>Eventos</span>
                     </a>
                 </li>
-            <?php #endif; ?>
+            <?php endif; ?>
 
-            <?php #if (hasPermission('EXPENSE_VIEW')): ?>
+            <?php if (hasPermission('EXPENSE_VIEW')): ?>
                 <li class="nav-item">
                     <a href="<?= BASE_URL ?>/private/entidades/usuarios/index.php" class="nav-link">
                         <i class="bi bi-cash-coin"></i>
                         <span>Gastos</span>
                     </a>
                 </li>
-            <?php #endif; ?>
+            <?php endif; ?>
 
-            <?php #if (hasPermission('IMPORT_VIEW')): ?>
+            <?php if (hasPermission('IMPORT_VIEW')): ?>
                 <li class="nav-item">
                     <a href="<?= BASE_URL ?>/private/entidades/usuarios/index.php" class="nav-link">
                         <i class="bi bi-box-seam"></i>
                         <span>Importaciones</span>
                     </a>
                 </li>
-            <?php #endif; ?>
+            <?php endif; ?>
+
+            <?php if (hasPermission('PROVIDER_VIEW')): ?>
+                <li class="nav-item">
+                    <a href="<?= BASE_URL ?>/private/admin/state/index.php" class="nav-link">
+                        <i class="bi bi-building"></i>
+                        <span>Proveedores</span>
+                    </a>
+                </li>
+            <?php endif; ?>
 
             <?php if ($canViewMasters): ?>
                 <li class="nav-item mt-2">
@@ -78,68 +99,59 @@
                     </span>
                 </li>
 
-                <?php #if (hasPermission('STATE_VIEW')): ?>
-                    <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/admin/state/index.php" class="nav-link nav-link-submenu">
-                            <i class="bi bi-building"></i>
-                            <span>Proveedores</span>
-                        </a>
-                    </li>
-                <?php #endif; ?>
-
-                <?php #if (hasPermission('COUNTRY_VIEW')): ?>
+                <?php if (hasPermission('COUNTRY_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/admin/country/index.php" class="nav-link nav-link-submenu">
                             <i class="bi bi-globe-americas"></i>
                             <span>Países</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
 
-                <?php #if (hasPermission('STATE_VIEW')): ?>
+                <?php if (hasPermission('STATE_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/admin/state/index.php" class="nav-link nav-link-submenu">
                             <i class="bi bi-map"></i>
                             <span>Estados</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
 
-                <?php #if (hasPermission('CITY_VIEW')): ?>
+                <?php if (hasPermission('CITY_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/admin/city/index.php" class="nav-link nav-link-submenu">
                             <i class="bi bi-buildings"></i>
                             <span>Ciudades</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
 
-                <?php #if (hasPermission('CURRENCY_VIEW')): ?>
+                <?php if (hasPermission('CURRENCY_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/admin/currency/index.php" class="nav-link nav-link-submenu">
                             <i class="bi bi-currency-exchange"></i>
                             <span>Monedas</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
 
-                <?php #if (hasPermission('DOCUMENT_TYPE_VIEW')): ?>
+                <?php if (hasPermission('DOCUMENT_TYPE_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/admin/documentType/index.php" class="nav-link nav-link-submenu">
                             <i class="bi bi-card-text"></i>
                             <span>Tipos de documento</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
 
-                <?php #if (hasPermission('CONTACT_TYPE_VIEW')): ?>
+                <?php if (hasPermission('CONTACT_TYPE_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/admin/contactType/index.php" class="nav-link nav-link-submenu">
                             <i class="bi bi-person-lines-fill"></i>
                             <span>Tipos de contacto</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
             <?php endif; ?>
 
             <?php if ($canViewSecurity): ?>
@@ -149,32 +161,32 @@
                     </span>
                 </li>
 
-                <?php #if (hasPermission('USER_VIEW')): ?>
+                <?php if (hasPermission('USER_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/entidades/usuarios/index.php" class="nav-link">
                             <i class="bi bi-person-gear"></i>
                             <span>Usuarios</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
 
-                <?php #if (hasPermission('ROLE_VIEW')): ?>
+                <?php if (hasPermission('ROLE_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/admin/roles/index.php" class="nav-link nav-link-submenu">
                             <i class="bi bi-person-badge"></i>
                             <span>Roles</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
 
-                <?php #if (hasPermission('PERMISSION_VIEW')): ?>
+                <?php if (hasPermission('PERMISSION_VIEW')): ?>
                     <li class="nav-item">
                         <a href="<?= BASE_URL ?>/private/admin/permisos/index.php" class="nav-link nav-link-submenu">
                             <i class="bi bi-shield-lock"></i>
                             <span>Permisos</span>
                         </a>
                     </li>
-                <?php #endif; ?>
+                <?php endif; ?>
 
             <?php endif; ?>
         </ul>

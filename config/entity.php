@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-function getEntitiesByTypeId(PDO $pdo, int $entityTypeId): array
+function getEntitiesByTypeId(PDO $pdo, int $entityTypeId, bool $includeDeleted = false): array
 {
     $sql = "
         select
@@ -23,7 +23,8 @@ function getEntitiesByTypeId(PDO $pdo, int $entityTypeId): array
             e.comments,
             e.isContractSigned,
             e.contractFile,
-            e.createDate
+            e.createDate,
+            e.isDeleted + 0 AS isDeleted
             /*
             GROUP_CONCAT(
                 DISTINCT CASE
@@ -43,11 +44,10 @@ function getEntitiesByTypeId(PDO $pdo, int $entityTypeId): array
             ) AS phones
             */
         from fcrm.entity e
-            inner join fcrm.country co on co.id = e.countryId
-            inner join fcrm.country_document cd on cd.countryId = co.id and cd.documentTypeId = e.documentTypeId
+            left join fcrm.country co on co.id = e.countryId
+            left join fcrm.country_document cd on cd.countryId = co.id and cd.documentTypeId = e.documentTypeId
             #left  join fcrm.entity_contact ec on ec.entityId = e.id
-        where COALESCE(e.isDeleted, b'0') = b'0'
-            and e.entityTypeId = :entityTypeId
+        where e.entityTypeId = :entityTypeId
         /*
         group by
             e.id,
@@ -67,6 +67,14 @@ function getEntitiesByTypeId(PDO $pdo, int $entityTypeId): array
             e.contractFile,
             e.createDate
             */";
+
+    if (!$includeDeleted) {
+        $sql = str_replace(
+            'where e.entityTypeId = :entityTypeId',
+            "where COALESCE(e.isDeleted, b'0') = b'0'\n            and e.entityTypeId = :entityTypeId",
+            $sql
+        );
+    }
 
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':entityTypeId', $entityTypeId, PDO::PARAM_INT);
@@ -113,6 +121,7 @@ function getClientById(PDO $pdo, int $entityId): array|false {
             contractFile
         from fcrm.entity
         where COALESCE(isDeleted, b'0') = b'0'
+            and entityTypeId = 2
             and id = :entityId
         LIMIT 1
     ";
@@ -340,6 +349,8 @@ function setClientBlocked(PDO $pdo,int $clientId,bool $blocked): bool {
         UPDATE entity
         SET isBlocked = :isBlocked
         WHERE id = :clientId
+            AND entityTypeId = 2
+            AND COALESCE(isDeleted, b'0') = b'0'
     ";
 
     $stmt = $pdo->prepare($sql);
@@ -354,11 +365,56 @@ function deleteClient(PDO $pdo, int $clientId): bool {
         UPDATE entity
         SET isDeleted = 1
         WHERE COALESCE(isDeleted, b'0') = b'0'
+            and entityTypeId = 2
             and id = :clientId
     ";
 
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':clientId',$clientId,PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
+
+function setUserBlocked(PDO $pdo, int $userId, bool $blocked): bool
+{
+    $stmt = $pdo->prepare(
+        'UPDATE entity_user
+         SET isBlocked = :isBlocked
+                 WHERE id = :userId
+                     AND entityId IN (SELECT id FROM entity WHERE entityTypeId = 2)
+           AND COALESCE(isDeleted, b\'0\') = b\'0\''
+    );
+    $stmt->bindValue(':isBlocked', $blocked ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
+
+function setUserActivated(PDO $pdo, int $userId, bool $activated): bool
+{
+    $stmt = $pdo->prepare(
+        'UPDATE entity_user
+         SET isConfirmed = :isConfirmed
+                 WHERE id = :userId
+                     AND entityId IN (SELECT id FROM entity WHERE entityTypeId = 2)
+           AND COALESCE(isDeleted, b\'0\') = b\'0\''
+    );
+    $stmt->bindValue(':isConfirmed', $activated ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
+
+function deleteUser(PDO $pdo, int $userId): bool
+{
+    $stmt = $pdo->prepare(
+        'UPDATE entity_user
+         SET isDeleted = b\'1\'
+                 WHERE id = :userId
+                     AND entityId IN (SELECT id FROM entity WHERE entityTypeId = 2)
+           AND COALESCE(isDeleted, b\'0\') = b\'0\''
+    );
+    $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 
     return $stmt->execute();
 }
@@ -391,7 +447,7 @@ function getContactTypes(PDO $pdo): array {
         ->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getUsersByEntities(PDO $pdo): array
+function getUsersByEntities(PDO $pdo, bool $includeDeleted = false): array
 {
     $sql = "
         SELECT
@@ -399,15 +455,22 @@ function getUsersByEntities(PDO $pdo): array
             eu.entityId,
             eu.username,
             eu.createDate,
-            eu.isActivated + 0 AS isActivated,
+            eu.isConfirmed + 0 AS isConfirmed,
             eu.isBlocked + 0 AS isBlocked,
             eu.isDeleted + 0 AS isDeleted
         FROM entity_user AS eu
-        WHERE COALESCE(eu.isDeleted, b'0') = b'0'
         ORDER BY
             eu.entityId,
             eu.username
     ";
+
+    if (!$includeDeleted) {
+        $sql = str_replace(
+            '        ORDER BY',
+            "        WHERE COALESCE(eu.isDeleted, b'0') = b'0'\n        ORDER BY",
+            $sql
+        );
+    }
 
     $stmt = $pdo->query($sql);
 
@@ -426,4 +489,125 @@ function getUsersByEntities(PDO $pdo): array
     }
 
     return $usersByEntity;
+}
+
+function getAddressesByEntities(PDO $pdo, bool $includeDeleted = false): array
+{
+    $sql = "
+        SELECT
+            ea.id,
+            ea.entityId,
+            ea.addressLine1,
+            ea.addressLine2,
+            ea.postalCode,
+            ea.addressType,
+            ea.isPrimary + 0 AS isPrimary,
+            ea.isActive + 0 AS isActive,
+            ea.isDeleted + 0 AS isDeleted,
+            ci.name AS cityName,
+            st.name AS stateName,
+            co.name AS countryName
+        FROM entity_address AS ea
+        LEFT JOIN city AS ci ON ci.id = ea.cityId
+        LEFT JOIN state AS st ON st.id = ci.stateId
+        LEFT JOIN country AS co ON co.id = st.countryId
+    ";
+
+    if (!$includeDeleted) {
+        $sql .= "
+            WHERE ea.isActive = b'1'
+              AND COALESCE(ea.isDeleted, b'0') = b'0'
+        ";
+    }
+
+    $sql .= " ORDER BY ea.entityId, ea.isPrimary DESC, ea.id";
+
+    $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    $addressesByEntity = [];
+
+    foreach ($rows as $row) {
+        $addressesByEntity[(int) $row['entityId']][] = $row;
+    }
+
+    return $addressesByEntity;
+}
+
+function insertClientUser(
+    PDO $pdo,
+    int $entityId,
+    string $username,
+    string $password,
+    int $userTypeId = 2
+): int|string {
+    try {
+        $stmt = $pdo->prepare(
+            'INSERT INTO entity_user
+                     (entityId, userTypeId, username, pwdHash, isConfirmed, isBlocked, isDeleted)
+                 SELECT :entityId, :userTypeId, :username, :pwdHash, b\'0\', b\'0\', b\'0\'
+             FROM entity
+             WHERE id = :entityIdCheck
+               AND entityTypeId = 2
+               AND COALESCE(isDeleted, b\'0\') = b\'0\''
+        );
+        $stmt->execute([
+            ':entityId' => $entityId,
+            ':entityIdCheck' => $entityId,
+            ':userTypeId' => $userTypeId,
+            ':username' => $username,
+            ':pwdHash' => password_hash($password, PASSWORD_DEFAULT)
+        ]);
+
+        if ($stmt->rowCount() !== 1) {
+            return 'El cliente no existe o está eliminado.';
+        }
+
+        return (int) $pdo->lastInsertId();
+    } catch (PDOException $exception) {
+        if ((string) $exception->getCode() === '23000') {
+            return 'El nombre de usuario ya existe.';
+        }
+
+        error_log($exception->getMessage());
+        return 'No se pudo crear el usuario.';
+    }
+}
+
+function updateClientUser(
+    PDO $pdo,
+    int $userId,
+    string $username,
+    ?string $password = null
+): bool|string {
+    try {
+        $fields = ['username = :username'];
+        $params = [
+            ':userId' => $userId,
+            ':username' => $username
+        ];
+
+        if ($password !== null) {
+            $fields[] = 'pwdHash = :pwdHash';
+            $params[':pwdHash'] = password_hash($password, PASSWORD_DEFAULT);
+        }
+
+        $stmt = $pdo->prepare(
+            'UPDATE entity_user AS eu
+             INNER JOIN entity AS e ON e.id = eu.entityId
+             SET ' . implode(', ', $fields) . '
+             WHERE eu.id = :userId
+               AND e.entityTypeId = 2
+               AND COALESCE(e.isDeleted, b\'0\') = b\'0\'
+               AND COALESCE(eu.isDeleted, b\'0\') = b\'0\''
+        );
+        $stmt->execute($params);
+
+        return true;
+    } catch (PDOException $exception) {
+        if ((string) $exception->getCode() === '23000') {
+            return 'El nombre de usuario ya existe.';
+        }
+
+        error_log($exception->getMessage());
+        return 'No se pudo actualizar el usuario.';
+    }
 }

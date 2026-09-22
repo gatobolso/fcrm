@@ -1,7 +1,8 @@
 <?php
-echo $_SERVER['REQUEST_METHOD'];
+declare(strict_types=1);
 
-session_start();
+require_once __DIR__ . '/config/app.php';
+require_once __DIR__ . '/includes/auth.php';
 
 require_once 'config/database.php';
 
@@ -13,28 +14,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     $stmt = $pdo->prepare("
-        select pwdHash
-        from fcrm.user
-        where username = ?
-            and activated = 1
-            and userTypeId = 1
+        select u.id, u.username, u.pwdHash, e.name
+        from fcrm.entity_user u
+        	join fcrm.entity e on e.id = u.entityId
+        where u.username = ?
+            and u.isConfirmed = 1
+            and u.isBlocked = 0
+            and u.isDeleted = 0
         limit 1
     ");
 
-    //$stmt->execute([$usuario]);
+    $stmt->execute([$usuario]);
 
-    //$user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    //if ($user && password_verify($password, $user['pwdHash'])) {
+    if ($user && password_verify($password, (string) $user['pwdHash'])) {
 
         session_regenerate_id(true);
 
-        $_SESSION['userId'] = '1';//$user['IdUsuario'];
-        $_SESSION['usuario'] = $usuario;
+        $_SESSION['userId'] = (int) $user['id'];
+        $_SESSION['userName'] = (string) $user['username'];
+        $_SESSION['entityName'] = (string) $user['name'];
+        $_SESSION['permissions'] = loadUserPermissions($pdo, (int) $user['id']);
+        csrfToken();
 
-        header('Location: private/dashboard.php');
+        header('Location: ' . BASE_URL . '/private/dashboard.php');
         exit;
-    //}
+    }
 
     $error = 'Usuario o contraseña incorrectos';
 }

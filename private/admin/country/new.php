@@ -5,9 +5,10 @@ declare(strict_types=1);
 require_once '../../../config/app.php';
 require_once '../../../includes/auth.php';
 
-#requirePermission('COUNTRY_CREATE');
+requirePermission('COUNTRY_CREATE');
 
 require_once '../../../config/database.php';
+require_once '../../../config/country.php';
 
 $title = 'Nuevo país';
 $error = '';
@@ -39,6 +40,7 @@ foreach ($documentTypes as $documentType) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireValidCsrfToken();
     $form = [
         'name' => trim($_POST['name'] ?? ''),
         'iso2Code' => strtoupper(
@@ -157,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header(
                 'Location: '
                 . BASE_URL
-                . '/private/administracion/paises/index.php'
+                . '/private/admin/country/index.php'
                 . '?created=1&id='
                 . $countryId
             );
@@ -187,23 +189,27 @@ include BASE_PATH . '/layouts/sidebar.php';
         </div>
     </div>
 
-    <?= BASE_URL ?>/private/administracion/paises/index.php
+    <a href="<?= BASE_URL ?>/private/admin/country/index.php" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>
         Volver
     </a>
 </div>
 
 <?php if ($error !== ''): ?>
-    <div class="alert alert-danger" role="alert">
-        <?= htmlspecialchars(
-            $error,
-            ENT_QUOTES,
-            'UTF-8'
-        ) ?>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090; margin-top: 65px;">
+        <div class="toast show text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
+                </div>
+            </div>
+        </div>
     </div>
 <?php endif; ?>
 
 <form method="POST" autocomplete="off">
+    <?= csrfField() ?>
 
     <div class="card shadow-sm mb-4">
         <div class="card-header">
@@ -548,7 +554,8 @@ include BASE_PATH . '/layouts/sidebar.php';
 
     <div class="d-flex justify-content-end gap-2 mb-4">
 
-        private/administracion/paises/index.php"
+        <a
+            href="<?= BASE_URL ?>/private/admin/country/index.php"
             class="btn btn-outline-secondary"
         >
             Cancelar

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-function getCountries(PDO $pdo, bool $onlyActive = true): array {
+function getCountries(PDO $pdo, bool $onlyActive = true, bool $includeDeleted = false): array {
     $sql = "
         select
             co.id,
@@ -15,11 +15,18 @@ function getCountries(PDO $pdo, bool $onlyActive = true): array {
             co.fixedPhoneFormat,
             co.phonePrefix,
             co.phoneDigitsToRemove,
-            co.isActive
+            co.isActive,
+            co.isDeleted
         from country co
-            inner join currency cu on cu.id = co.currencyId
-        where isDeleted = b'0'
+            left join currency cu on cu.id = co.currencyId
+        where 1 = 1
     ";
+
+    if (!$includeDeleted) {
+        $sql .= "
+            and co.isDeleted = b'0'
+        ";
+    }
 
     if ($onlyActive) {
         $sql .= "
@@ -28,7 +35,7 @@ function getCountries(PDO $pdo, bool $onlyActive = true): array {
     }
 
     $sql .= "
-        ORDER BY id
+        ORDER BY co.name
     ";
 
     $stmt = $pdo->query($sql);
@@ -36,18 +43,35 @@ function getCountries(PDO $pdo, bool $onlyActive = true): array {
     return $stmt->fetchAll();
 }
 
-function getCountryById(PDO $pdo,int $countryId): array|false {
+function deleteCountry(PDO $pdo, int $countryId): bool
+{
+    $stmt = $pdo->prepare(
+        "UPDATE country
+         SET isDeleted = b'1'
+         WHERE id = :countryId
+           AND COALESCE(isDeleted, b'0') = b'0'"
+    );
+    $stmt->execute([':countryId' => $countryId]);
+
+    return $stmt->rowCount() > 0;
+}
+
+function getCountryById(PDO $pdo, int $countryId): array|false {
     $sql = "
         SELECT
             id,
             name,
-            iso2,
-            iso3,
+                        iso2Code,
+                        iso3Code,
+                        currencyId,
+                        phonePrefix,
+                        phoneDigitsToRemove,
             mobilePhoneFormat,
-            idCardFormat,
-            active
+                        fixedPhoneFormat,
+                        isActive
         FROM country
-        WHERE id = :countryId
+                WHERE id = :countryId
+                    AND COALESCE(isDeleted, b'0') = b'0'
         LIMIT 1
     ";
 
@@ -76,30 +100,97 @@ function getCountriesDocuments(PDO $pdo): array
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function updateCountry(PDO $pdo,int $countryId,array $country): bool {
+function getCountryDocuments(PDO $pdo, int $countryId): array
+{
+    $stmt = $pdo->prepare(
+        'SELECT documentTypeId, name, format
+         FROM country_document
+         WHERE countryId = :countryId'
+    );
+    $stmt->execute([':countryId' => $countryId]);
+
+    $documents = [];
+
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $document) {
+        $documents[(int) $document['documentTypeId']] = [
+            'name' => (string) ($document['name'] ?? ''),
+            'format' => (string) ($document['format'] ?? '')
+        ];
+    }
+
+    return $documents;
+}
+
+function updateCountry(PDO $pdo, int $countryId, array $country, array $documents = []): bool {
     $sql = "
         UPDATE country
         SET
             name = :name,
-            iso2 = :iso2,
-            iso3 = :iso3,
+            iso2Code = :iso2Code,
+            iso3Code = :iso3Code,
+            currencyId = :currencyId,
+            phonePrefix = :phonePrefix,
+            phoneDigitsToRemove = :phoneDigitsToRemove,
             mobilePhoneFormat = :mobilePhoneFormat,
-            idCardFormat = :idCardFormat,
-            active = :active
+            fixedPhoneFormat = :fixedPhoneFormat,
+            isActive = :isActive
         WHERE id = :countryId
+          AND COALESCE(isDeleted, b'0') = b'0'
     ";
 
     $stmt = $pdo->prepare($sql);
 
-    return $stmt->execute([
-        ':name'              => $country['name'],
-        ':iso2'              => $country['iso2'],
-        ':iso3'              => $country['iso3'],
-        ':mobilePhoneFormat' => $country['mobilePhoneFormat'] ?: null,
-        ':idCardFormat'      => $country['idCardFormat'] ?: null,
-        ':active'            => $country['active'] ?? 1,
-        ':countryId'         => $countryId
-    ]);
+    $pdo->beginTransaction();
+
+    try {
+        $stmt->execute([
+            ':name' => $country['name'],
+            ':iso2Code' => $country['iso2Code'],
+            ':iso3Code' => $country['iso3Code'],
+            ':currencyId' => $country['currencyId'],
+            ':phonePrefix' => $country['phonePrefix'],
+            ':phoneDigitsToRemove' => $country['phoneDigitsToRemove'],
+            ':mobilePhoneFormat' => $country['mobilePhoneFormat'] ?: null,
+            ':fixedPhoneFormat' => $country['fixedPhoneFormat'] ?: null,
+            ':isActive' => $country['isActive'] ?? 1,
+            ':countryId' => $countryId
+        ]);
+
+        $deleteDocuments = $pdo->prepare(
+            'DELETE FROM country_document WHERE countryId = :countryId'
+        );
+        $deleteDocuments->execute([':countryId' => $countryId]);
+
+        $insertDocument = $pdo->prepare(
+            'INSERT INTO country_document (countryId, documentTypeId, name, format)
+             VALUES (:countryId, :documentTypeId, :name, :format)'
+        );
+
+        foreach ($documents as $documentTypeId => $document) {
+            $name = trim((string) ($document['name'] ?? ''));
+            $format = trim((string) ($document['format'] ?? ''));
+
+            if ($name === '' && $format === '') {
+                continue;
+            }
+
+            $insertDocument->execute([
+                ':countryId' => $countryId,
+                ':documentTypeId' => (int) $documentTypeId,
+                ':name' => $name !== '' ? $name : null,
+                ':format' => $format !== '' ? $format : null
+            ]);
+        }
+
+        $pdo->commit();
+        return true;
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        throw $e;
+    }
 }
 
 function importCountryStates(PDO $pdo, int $countryId, string $countryName): int {
@@ -245,7 +336,8 @@ function countryExistsByIso2(
         (
             SELECT 1
             FROM country
-            WHERE iso2Code = :iso2Code
+                        WHERE iso2Code = :iso2Code
+                            AND COALESCE(isDeleted, b'0') = b'0'
         )
     ";
 
@@ -267,7 +359,8 @@ function countryExistsByName(
         (
             SELECT 1
             FROM country
-            WHERE name = :name
+                        WHERE name = :name
+                            AND COALESCE(isDeleted, b'0') = b'0'
         )
     ";
 
@@ -275,6 +368,48 @@ function countryExistsByName(
 
     $stmt->execute([
         ':name' => $name
+    ]);
+
+    return (bool) $stmt->fetchColumn();
+}
+
+function countryExistsByIso2Except(
+    PDO $pdo,
+    string $iso2Code,
+    int $countryId
+): bool {
+    $stmt = $pdo->prepare(
+        'SELECT EXISTS (
+            SELECT 1 FROM country
+            WHERE iso2Code = :iso2Code
+              AND id <> :countryId
+              AND COALESCE(isDeleted, b\'0\') = b\'0\'
+        )'
+    );
+    $stmt->execute([
+        ':iso2Code' => $iso2Code,
+        ':countryId' => $countryId
+    ]);
+
+    return (bool) $stmt->fetchColumn();
+}
+
+function countryExistsByNameExcept(
+    PDO $pdo,
+    string $name,
+    int $countryId
+): bool {
+    $stmt = $pdo->prepare(
+        'SELECT EXISTS (
+            SELECT 1 FROM country
+            WHERE name = :name
+              AND id <> :countryId
+              AND COALESCE(isDeleted, b\'0\') = b\'0\'
+        )'
+    );
+    $stmt->execute([
+        ':name' => $name,
+        ':countryId' => $countryId
     ]);
 
     return (bool) $stmt->fetchColumn();

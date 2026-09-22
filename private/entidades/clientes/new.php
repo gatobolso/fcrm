@@ -1,8 +1,9 @@
 <?php
     declare(strict_types=1);
 
-    require_once '../../../includes/auth.php';
-    #requirePermission('CLIENT_CREATE');
+    require_once '../../../config/app.php';
+    require_once BASE_PATH . '/includes/auth.php';
+    requirePermission('CLIENT_CREATE');
 
     require_once '../../../config/database.php';
     require_once '../../../config/entity.php';
@@ -37,6 +38,7 @@
     $entityContacts = [];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        requireValidCsrfToken();
         $entity = [
             'name' => trim($_POST['name'] ?? ''),
             'entityTypeId' => !empty($_POST['entityTypeId']) ? (int) $_POST['entityTypeId'] : null,

@@ -315,7 +315,7 @@
 			<column name="createDate" type="DATETIME" mandatory="y" >
 				<defo><![CDATA[current_timestamp()]]></defo>
 			</column>
-			<column name="isActivated" type="BIT" length="1" mandatory="y" >
+			<column name="isConfirmed" type="BIT" length="1" mandatory="y" >
 				<defo><![CDATA[0]]></defo>
 			</column>
 			<column name="isBlocked" type="BIT" length="1" mandatory="y" >

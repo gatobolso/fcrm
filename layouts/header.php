@@ -5,7 +5,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 $theme = $_SESSION['theme'] ?? 'light';
-$username = $_SESSION['username'] ?? $_SESSION['usuario'] ?? 'Usuario';
+$username = $_SESSION['userName'] ?? 'Usuario';
 
 $allowedThemes = ['light', 'dark'];
 
@@ -62,6 +62,8 @@ if (!in_array($theme, $allowedThemes, true)) {
             flex: 0 0 190px;
             border-right: 1px solid var(--bs-border-color);
             background-color: var(--bs-tertiary-bg);
+            transition: width 0.2s ease, flex-basis 0.2s ease;
+            overflow-x: hidden;
         }
 
         .sidebar .nav-link {
@@ -87,6 +89,35 @@ if (!in_array($theme, $allowedThemes, true)) {
             background-color: var(--bs-body-bg);
         }
 
+        .sidebar-collapsed .sidebar {
+            width: 58px;
+            flex-basis: 58px;
+        }
+
+        .sidebar-collapsed .sidebar .nav-link {
+            justify-content: center;
+            gap: 0;
+            white-space: nowrap;
+        }
+
+        .sidebar-collapsed .sidebar .nav-link span,
+        .sidebar-collapsed .sidebar .submenu-arrow {
+            display: none;
+        }
+
+        .sidebar-collapsed .sidebar .nav-link-submenu {
+            padding-left: 0.75rem;
+        }
+
+        .sidebar-collapsed #sidebarToggle {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .sidebar-collapsed #sidebarToggle span {
+            display: none;
+        }
+
         .page-title {
             margin: 0;
             font-size: 1.65rem;
@@ -100,6 +131,7 @@ if (!in_array($theme, $allowedThemes, true)) {
 
             .sidebar {
                 width: 100%;
+                flex-basis: auto;
                 min-height: auto;
                 border-right: 0;
                 border-bottom: 1px solid var(--bs-border-color);
@@ -107,6 +139,10 @@ if (!in_array($theme, $allowedThemes, true)) {
 
             .content {
                 padding: 1rem;
+            }
+
+            .sidebar-collapsed .sidebar {
+                display: none;
             }
         }
 
@@ -171,6 +207,11 @@ if (!in_array($theme, $allowedThemes, true)) {
 </head>
 
 <body>
+    <script>
+        if (localStorage.getItem('sidebarCollapsed') === '1') {
+            document.body.classList.add('sidebar-collapsed');
+        }
+    </script>
     <nav class="navbar topbar px-3">
         <div class="container-fluid px-0">
             <a class="navbar-brand">

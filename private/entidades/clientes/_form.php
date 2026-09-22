@@ -39,6 +39,7 @@
 <?php endif; ?>
 
 <form method="POST" autocomplete="off">
+    <?= csrfField() ?>
 
     <?php if ($isEdit): ?>
         <input type="hidden" name="entityId" value="<?= (int) $entity['id'] ?>">

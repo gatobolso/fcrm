@@ -5,7 +5,7 @@
 
     require_once __DIR__ . '/../../../config/app.php';
     require_once BASE_PATH . '/includes/auth.php';
-    #requirePermission('CLIENT_EDIT');
+    requirePermission('CLIENT_EDIT');
 
     require_once BASE_PATH . '/config/database.php';
     require_once BASE_PATH . '/config/entity.php';
@@ -34,6 +34,7 @@
     $error = '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        requireValidCsrfToken();
         $documentNumber = preg_replace('/\D/', '', $_POST['documentNumber'] ?? '');
         if ($documentNumber === '') {
             $documentNumber = null;
@@ -53,7 +54,7 @@
         #$selectedEntityTypes = array_map('intval', $_POST['entityTypes'] ?? []);
         #$entityContacts = $_POST['contacts'] ?? [];
 
-        if ($entity['name'] === '') {
+        if ($entityData['name'] === '') {
             $error = 'El nombre es obligatorio.';
         }
 
@@ -102,6 +103,7 @@
 
     <div class="card-body">
         <form method="POST">
+            <?= csrfField() ?>
             
             <div class="mb-3">
                 <label class="form-label">Nombre</label>
