@@ -1,5 +1,3 @@
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -71,14 +69,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        const currentTheme = localStorage.getItem('theme') || 'light';
 
         document.documentElement.setAttribute(
             'data-bs-theme',
-            savedTheme
+            currentTheme
         );
 
-        updateThemeOption(savedTheme);
+        updateThemeOption(currentTheme);
     });
 </script>
 

@@ -1,16 +1,15 @@
 <?php
     declare(strict_types=1);
 
-    require_once '../../../config/app.php';
-    require_once BASE_PATH . '/includes/auth.php';
+   	$title = 'Nuevo cliente';
+
+    require_once '../../../includes/init.php'; // <--- Esto hace TODO: conecta DB, checa sesión y checa bloqueo
     requirePermission('CLIENT_CREATE');
 
-    require_once '../../../config/database.php';
-    require_once '../../../config/entity.php';
-    require_once '../../../config/country.php';
+    require_once BASE_PATH . '/config/entity.php';
+    require_once BASE_PATH . '/config/country.php';
 
 
-	$title = 'Nuevo cliente';
 	$formMode = 'create';
 	$error = '';
 
@@ -22,7 +21,7 @@
     $entity = [
         'id' => 0,
         'name' => '',
-        'entityTypeId' => null,
+        'entityTypeId' => ET_CLIENT,
         'countryId' => null,
         'documentTypeId' => null,
         'documentNumber' => '',

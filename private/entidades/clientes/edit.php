@@ -3,11 +3,9 @@
 
     $title = 'Editar Cliente';
 
-    require_once __DIR__ . '/../../../config/app.php';
-    require_once BASE_PATH . '/includes/auth.php';
+    require_once '../../../includes/init.php'; // <--- Esto hace TODO: conecta DB, checa sesión y checa bloqueo
     requirePermission('CLIENT_EDIT');
 
-    require_once BASE_PATH . '/config/database.php';
     require_once BASE_PATH . '/config/entity.php';
     require_once BASE_PATH . '/config/country.php';
     
@@ -162,7 +160,7 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>Contactos</strong>
-                    <button type="button" id="addContactButton" class="btn btn-sm btn-primary">
+                    <button type="button" id="addContactButton" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Agregar contacto">
                         <i class="bi bi-plus-circle me-1"></i>
                         Agregar contacto
                     </button>
@@ -206,7 +204,7 @@
                                             <input type="checkbox" name="contacts[<?= $index ?>][isActive]" class="form-check-input" value="1" <?= !isset($contact['isActive']) || !empty($contact['isActive']) ? 'checked' : '' ?>>
                                         </div>
 
-                                        <button type="button" class="btn btn-sm btn-outline-danger remove-contact" title="Eliminar contacto">
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-contact" data-bs-toggle="tooltip" title="Eliminar contacto">
                                             <i class="bi bi-trash"></i>
                                         </button>
 
@@ -220,8 +218,8 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary"> Guardar </button>
-            <a href="index.php" class="btn btn-outline-secondary">
+            <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" title="Guardar cambios"> Guardar </button>
+            <a href="index.php" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Cancelar y volver a clientes">
     <i class="bi bi-x-circle me-1"></i>
     Cancelar
 </a>
@@ -265,7 +263,7 @@
                                 <input type="checkbox" name="contacts[__INDEX__][isActive]" class="form-check-input" value="1" checked>
                             </div>
 
-                            <button type="button" class="btn btn-sm btn-outline-danger remove-contact" title="Eliminar contacto">
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-contact" data-bs-toggle="tooltip" title="Eliminar contacto">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>

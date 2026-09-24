@@ -1,0 +1,64 @@
+Listado de rutas de carpetas
+El n�mero de serie del volumen es 9A9E-C191
+C:.
+�   estructura_proyecto.txt
+�   fcrm.dbs
+�   fcrm.dbs.bak
+�   index.php
+�   login.php
+�   logout.php
+�   pass.php
+�   README.md
+�   
+����.vscode
+�       extensions.json
+�       launch.json
+�       
+����assets
+�   �   favicon.ico
+�   �   logo1.webp
+�   �   
+�   ����css
+�           global.css
+�           login.css
+�           
+����config
+�       app.php
+�       country.php
+�       database.php
+�       entity.php
+����database
+�       permissions.sql
+�       
+����includes
+�       auth.php
+�       
+����layouts
+�       change-theme.php
+�       footer.php
+�       header.php
+�       sidebar.php
+�       
+����private
+�   �   dashboard.php
+�   �   
+�   ����admin
+�   �   ����country
+�   �           edit.php
+�   �           index.php
+�   �           new.php
+�   �           
+�   ����entidades
+�       ����clientes
+�       �       edit.php
+�       �       index.php
+�       �       new.php
+�       �       _form.php
+�       �       
+�       ����usuarios
+�               edit.php
+�               new.php
+�               
+����services
+        CountryImporter.php
+        

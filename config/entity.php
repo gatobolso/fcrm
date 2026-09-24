@@ -10,6 +10,7 @@ function getEntitiesByTypeId(PDO $pdo, int $entityTypeId, bool $includeDeleted =
             e.id,
             e.name,
             co.name as countryName,
+            co.iso2Code as countryIso2Code,
             e.documentNumber,
             cd.name as documentName,
             e.email,
@@ -71,7 +72,8 @@ function getEntitiesByTypeId(PDO $pdo, int $entityTypeId, bool $includeDeleted =
     if (!$includeDeleted) {
         $sql = str_replace(
             'where e.entityTypeId = :entityTypeId',
-            "where COALESCE(e.isDeleted, b'0') = b'0'\n            and e.entityTypeId = :entityTypeId",
+            "where COALESCE(e.isDeleted, b'0') = b'0'
+                and e.entityTypeId = :entityTypeId",
             $sql
         );
     }

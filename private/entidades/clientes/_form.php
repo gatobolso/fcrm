@@ -1,23 +1,19 @@
 <?php
-
     $isEdit = ($formMode ?? '') === 'edit';
     $pageHeading = $isEdit ? 'Editar cliente' : 'Nuevo cliente';
     $submitText = $isEdit ? 'Guardar cambios' : 'Crear cliente';
     $contactStartIndex = count($entityContacts);
-
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="page-title"><?= htmlspecialchars($pageHeading, ENT_QUOTES, 'UTF-8') ?></h1>
         <div class="text-body-secondary">
-            <?= $isEdit
-                ? htmlspecialchars($entity['name'] ?? '', ENT_QUOTES, 'UTF-8')
-                : 'Complete los datos del nuevo cliente.' ?>
+            <?= $isEdit ? htmlspecialchars($entity['name'] ?? '', ENT_QUOTES, 'UTF-8') : 'Complete los datos del nuevo cliente.' ?>
         </div>
     </div>
 
-    <a href="index.php" class="btn btn-outline-secondary">
+    <a href="index.php" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Volver a clientes">
         <i class="bi bi-arrow-left me-1"></i>
         Volver
     </a>
@@ -164,7 +160,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <strong>Contactos</strong>
 
-            <button type="button" id="addContactButton" class="btn btn-sm btn-primary">
+            <button type="button" id="addContactButton" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Agregar contacto">
                 <i class="bi bi-plus-circle me-1"></i>
                 Agregar contacto
             </button>
@@ -203,44 +199,22 @@
 
                             <div class="col-md-3">
                                 <label class="form-label">Comentario</label>
-                                <input
-                                    type="text"
-                                    name="contacts[<?= $index ?>][comment]"
-                                    class="form-control"
-                                    maxlength="100"
-                                    value="<?= htmlspecialchars($contact['comment'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                >
+                                <input type="text" name="contacts[<?= $index ?>][comment]" class="form-control" maxlength="100" value="<?= htmlspecialchars($contact['comment'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                             </div>
 
                             <div class="col-md-2">
                                 <div class="d-flex flex-column gap-2">
                                     <div class="form-check">
-                                        <input
-                                            type="checkbox"
-                                            name="contacts[<?= $index ?>][isPrimary]"
-                                            class="form-check-input primary-contact"
-                                            value="1"
-                                            <?= !empty($contact['isPrimary']) ? 'checked' : '' ?>
-                                        >
+                                        <input type="checkbox" name="contacts[<?= $index ?>][isPrimary]" class="form-check-input primary-contact" value="1" <?= !empty($contact['isPrimary']) ? 'checked' : '' ?>>
                                         <label class="form-check-label">Principal</label>
                                     </div>
 
                                     <div class="form-check">
-                                        <input
-                                            type="checkbox"
-                                            name="contacts[<?= $index ?>][isActive]"
-                                            class="form-check-input"
-                                            value="1"
-                                            <?= !isset($contact['isActive']) || !empty($contact['isActive']) ? 'checked' : '' ?>
-                                        >
+                                        <input type="checkbox" name="contacts[<?= $index ?>][isActive]" class="form-check-input" value="1" <?= !isset($contact['isActive']) || !empty($contact['isActive']) ? 'checked' : '' ?>>
                                         <label class="form-check-label">Activo</label>
                                     </div>
 
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-danger remove-contact"
-                                        title="Quitar contacto"
-                                    >
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-contact" data-bs-toggle="tooltip" title="Quitar contacto">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -250,21 +224,18 @@
                 <?php endforeach; ?>
             </div>
 
-            <div
-                id="noContactsMessage"
-                class="text-center text-body-secondary py-3 <?= $entityContacts ? 'd-none' : '' ?>"
-            >
+            <div id="noContactsMessage" class="text-center text-body-secondary py-3 <?= $entityContacts ? 'd-none' : '' ?>">
                 No hay contactos registrados.
             </div>
         </div>
     </div>
 
     <div class="d-flex justify-content-end gap-2 mb-4">
-        <a href="index.php" class="btn btn-outline-secondary">
+        <a href="index.php" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Cancelar y volver a clientes">
             Cancelar
         </a>
 
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" title="<?= htmlspecialchars($submitText, ENT_QUOTES, 'UTF-8') ?>">
             <i class="bi bi-floppy me-1"></i>
             <?= htmlspecialchars($submitText, ENT_QUOTES, 'UTF-8') ?>
         </button>
@@ -340,6 +311,7 @@
                     <button
                         type="button"
                         class="btn btn-sm btn-outline-danger remove-contact"
+                        data-bs-toggle="tooltip"
                         title="Quitar contacto"
                     >
                         <i class="bi bi-trash"></i>
