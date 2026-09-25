@@ -1,14 +1,14 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
 
-$theme = $_SESSION['theme'] ?? 'light';
-$username = $_SESSION['userName'] ?? 'Usuario';
-$allowedThemes = ['light', 'dark'];
-if (!in_array($theme, $allowedThemes, true)) {
-    $theme = 'light';
-}
+    $theme = $_SESSION['theme'] ?? 'light';
+    $username = $_SESSION['userName'] ?? 'Usuario';
+    $allowedThemes = ['light', 'dark'];
+    if (!in_array($theme, $allowedThemes, true)) {
+        $theme = 'light';
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es" data-bs-theme="<?= htmlspecialchars($theme, ENT_QUOTES, 'UTF-8') ?>">
@@ -48,10 +48,27 @@ if (!in_array($theme, $allowedThemes, true)) {
                 </button>
 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="<?= BASE_URL ?>/private/profile.php"><i class="bi bi-person me-2"></i> Mi perfil</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><button type="button" class="dropdown-item" onclick="changeTheme('light')"><i class="bi bi-sun me-2"></i> Tema claro</button></li>
-                    <li><button type="button" class="dropdown-item" onclick="changeTheme('dark')"><i class="bi bi-moon me-2"></i> Tema oscuro</button></li>
+                    <li>
+                        <a class="dropdown-item" href="<?= BASE_URL ?>/private/profile.php">
+                            <i class="bi bi-person me-2"></i>
+                            Mi perfil
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li id="optionThemeLight">
+                        <button type="button" class="dropdown-item" onclick="changeTheme('light')">
+                            <i class="bi bi-sun me-2"></i>
+                            Tema claro
+                        </button>
+                    </li>
+                    <li id="optionThemeDark">
+                        <button type="button" class="dropdown-item" onclick="changeTheme('dark')">
+                            <i class="bi bi-moon me-2"></i>
+                            Tema oscuro
+                        </button>
+                    </li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-danger" href="<?= BASE_URL ?>/logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión</a></li>
                 </ul>

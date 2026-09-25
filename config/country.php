@@ -10,6 +10,7 @@ function getCountries(PDO $pdo, bool $onlyActive = true, bool $includeDeleted = 
             co.iso2Code,
             co.iso3Code,
             co.name,
+            co.stateName,
             cu.name as currencyName,
             co.mobilePhoneFormat,
             co.fixedPhoneFormat,
@@ -61,14 +62,14 @@ function getCountryById(PDO $pdo, int $countryId): array|false {
         SELECT
             id,
             name,
-                        iso2Code,
-                        iso3Code,
-                        currencyId,
-                        phonePrefix,
-                        phoneDigitsToRemove,
+            iso2Code,
+            iso3Code,
+            currencyId,
+            phonePrefix,
+            phoneDigitsToRemove,
             mobilePhoneFormat,
-                        fixedPhoneFormat,
-                        isActive
+            fixedPhoneFormat,
+            isActive
         FROM country
                 WHERE id = :countryId
                     AND COALESCE(isDeleted, b'0') = b'0'

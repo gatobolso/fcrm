@@ -3,7 +3,7 @@
 
     $title = 'Clientes';
     
-    require_once '../../../includes/init.php';
+    require_once '../../includes/init.php';
     requirePermission('CLIENT_VIEW');
     require_once BASE_PATH . '/config/entity.php';
 
@@ -312,17 +312,29 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php $countryFlag = obtenerBanderaPais($cliente['countryIso2Code'] ?? ''); ?>
-                                <?php if ($countryFlag !== ''): ?>
-                                    <span class="badge country-flag-badge" data-bs-toggle="tooltip" title="<?= htmlspecialchars((string) ($cliente['countryName'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                                        <?= $countryFlag ?>
+							<div class="client-actions">
+                                <!--
+								<div class="client-action-row">
+                                    <span>
+									<?php $countryFlag = obtenerBanderaPais($cliente['countryIso2Code'] ?? ''); ?>
+										<?php if ($countryFlag !== ''): ?>
+											<span class="badge country-flag-badge" data-bs-toggle="tooltip" title="<?= htmlspecialchars((string) ($cliente['countryName'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+												<?= $countryFlag ?>
+											</span>
+										<?php endif; ?>
+									</span>
+                                </div>
+								-->
+                                <div class="client-action-row">
+                                    <span>
+									<?php if (!empty($cliente['isDeleted'])): ?>
+										<span class="badge text-bg-danger">Borrado</span>
+									<?php else: ?>
+										<span class="badge <?= !empty($cliente['hasImported']) ? 'bg-success' : 'bg-danger' ?>" data-bs-toggle="tooltip" title="<?= !empty($cliente['hasImported']) ? 'Importó con Chinalat' : 'No importó con Chinalat' ?>"><i class="bi bi-box-seam"></i></span> <span class="badge <?= !empty($cliente['isContractSigned']) ? 'bg-success' : 'bg-danger' ?>" data-bs-toggle="tooltip" title="<?= !empty($cliente['isContractSigned']) ? 'Contrato firmado' : 'Contrato no firmado' ?>"><i class="bi bi-file-earmark-check"></i></span>
+									<?php endif; ?>
                                     </span>
-                                <?php endif; ?>
-                            <?php if (!empty($cliente['isDeleted'])): ?>
-                                <span class="badge text-bg-danger">Borrado</span>
-                            <?php else: ?>
-                                <span class="badge <?= !empty($cliente['hasImported']) ? 'bg-success' : 'bg-danger' ?>" data-bs-toggle="tooltip" title="<?= !empty($cliente['hasImported']) ? 'Importó con Chinalat' : 'No importó con Chinalat' ?>"><i class="bi bi-box-seam"></i></span> <span class="badge <?= !empty($cliente['isContractSigned']) ? 'bg-success' : 'bg-danger' ?>" data-bs-toggle="tooltip" title="<?= !empty($cliente['isContractSigned']) ? 'Contrato firmado' : 'Contrato no firmado' ?>"><i class="bi bi-file-earmark-check"></i></span>
-                            <?php endif; ?>
+                                </div>
+							</div>
                         </td>
                         <td class="text-end">
 

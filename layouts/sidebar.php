@@ -7,12 +7,18 @@ require_once __DIR__ . '/../config/app.php';
 // Obtenemos la ruta actual para marcar el menú activo
 $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 $currentPath = $currentPath ?? '';
+$mastersExpanded = str_contains($currentPath, '/private/admin/');
+$securityExpanded = str_contains($currentPath, '/private/seguridad/') || str_contains($currentPath, '/private/entidades/usuarios/');
 
 // Función para determinar si un enlace está activo
 if (!function_exists('isActiveMenu')) {
     function isActiveMenu(string $path, string $currentPath): string {
         return str_contains($currentPath, $path) ? 'active' : '';
     }
+}
+
+function isActiveMenu(string $path, string $currentPath): string {
+    return str_contains($currentPath, $path) ? 'active' : '';
 }
 
 // Verificación de permisos para grupos de menú
@@ -57,7 +63,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
             <!-- Clientes -->
             <?php if (hasPermission('CLIENT_VIEW')): ?>
                 <li class="nav-item">
-                    <a href="<?= BASE_URL ?>/private/entidades/clientes/index.php" class="nav-link <?= isActiveMenu('clientes/index.php', $currentPath) ?>">
+                    <a href="<?= BASE_URL ?>/private/clients/index.php" class="nav-link <?= isActiveMenu('clients/index.php', $currentPath) ?>">
                         <i class="bi bi-people"></i>
                         <span class="menu-text">Clientes</span>
                     </a>
@@ -67,7 +73,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
             <!-- Eventos -->
             <?php if (hasPermission('EVENT_VIEW')): ?>
                 <li class="nav-item">
-                    <a href="<?= BASE_URL ?>/private/eventos/index.php" class="nav-link <?= isActiveMenu('eventos/index.php', $currentPath) ?>">
+                    <a href="<?= BASE_URL ?>/private/events/index.php" class="nav-link <?= isActiveMenu('events/index.php', $currentPath) ?>">
                         <i class="bi bi-calendar-event"></i>
                         <span class="menu-text">Eventos</span>
                     </a>
@@ -77,7 +83,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
             <!-- Gastos -->
             <?php if (hasPermission('EXPENSE_VIEW')): ?>
                 <li class="nav-item">
-                    <a href="<?= BASE_URL ?>/private/gastos/index.php" class="nav-link <?= isActiveMenu('gastos/index.php', $currentPath) ?>">
+                    <a href="<?= BASE_URL ?>/private/expenses/index.php" class="nav-link <?= isActiveMenu('expenses/index.php', $currentPath) ?>">
                         <i class="bi bi-cash-coin"></i>
                         <span class="menu-text">Gastos</span>
                     </a>
@@ -87,7 +93,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
             <!-- Importaciones -->
             <?php if (hasPermission('IMPORT_VIEW')): ?>
                 <li class="nav-item">
-                    <a href="<?= BASE_URL ?>/private/importaciones/index.php" class="nav-link <?= isActiveMenu('importaciones/index.php', $currentPath) ?>">
+                    <a href="<?= BASE_URL ?>/private/imports/index.php" class="nav-link <?= isActiveMenu('imports/index.php', $currentPath) ?>">
                         <i class="bi bi-box-seam"></i>
                         <span class="menu-text">Importaciones</span>
                     </a>
@@ -97,9 +103,29 @@ $canViewSecurity = hasPermission('USER_VIEW')
             <!-- Proveedores -->
             <?php if (hasPermission('PROVIDER_VIEW')): ?>
                 <li class="nav-item">
-                    <a href="<?= BASE_URL ?>/private/entidades/proveedores/index.php" class="nav-link <?= isActiveMenu('proveedores/index.php', $currentPath) ?>">
+                    <a href="<?= BASE_URL ?>/private/providers/index.php" class="nav-link <?= isActiveMenu('providers/index.php', $currentPath) ?>">
                         <i class="bi bi-building"></i>
                         <span class="menu-text">Proveedores</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Correo -->
+            <?php if (hasPermission('EMAIL_VIEW')): ?>
+                <li class="nav-item">
+                    <a href="<?= BASE_URL ?>/private/email/index.php" class="nav-link <?= isActiveMenu('email/index.php', $currentPath) ?>">
+                        <i class="bi bi-mailbox"></i>
+                        <span class="menu-text">Correo</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Calendario -->
+            <?php if (hasPermission('CALENDAR_VIEW')): ?>
+                <li class="nav-item">
+                    <a href="<?= BASE_URL ?>/private/calendar/index.php" class="nav-link <?= isActiveMenu('calendar/index.php', $currentPath) ?>">
+                        <i class="bi bi-calendar"></i>
+                        <span class="menu-text">Calendario</span>
                     </a>
                 </li>
             <?php endif; ?>
@@ -114,7 +140,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
 
                 <?php if (hasPermission('COUNTRY_VIEW')): ?>
                     <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/admin/country/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('country/index.php', $currentPath) ?>">
+                        <a href="<?= BASE_URL ?>/private/admin/countries/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('countries/index.php', $currentPath) ?>">
                             <i class="bi bi-globe-americas"></i>
                             <span class="menu-text">Países</span>
                         </a>
@@ -123,7 +149,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
 
                 <?php if (hasPermission('STATE_VIEW')): ?>
                     <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/admin/state/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('state/index.php', $currentPath) ?>">
+                        <a href="<?= BASE_URL ?>/private/admin/states/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('states/index.php', $currentPath) ?>">
                             <i class="bi bi-map"></i>
                             <span class="menu-text">Estados</span>
                         </a>
@@ -132,7 +158,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
 
                 <?php if (hasPermission('CITY_VIEW')): ?>
                     <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/admin/city/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('city/index.php', $currentPath) ?>">
+                        <a href="<?= BASE_URL ?>/private/admin/cities/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('cities/index.php', $currentPath) ?>">
                             <i class="bi bi-buildings"></i>
                             <span class="menu-text">Ciudades</span>
                         </a>
@@ -141,7 +167,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
 
                 <?php if (hasPermission('CURRENCY_VIEW')): ?>
                     <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/admin/currency/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('currency/index.php', $currentPath) ?>">
+                        <a href="<?= BASE_URL ?>/private/admin/currencies/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('currencies/index.php', $currentPath) ?>">
                             <i class="bi bi-currency-exchange"></i>
                             <span class="menu-text">Monedas</span>
                         </a>
@@ -150,7 +176,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
 
                 <?php if (hasPermission('DOCUMENT_TYPE_VIEW')): ?>
                     <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/admin/documentType/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('documentType/index.php', $currentPath) ?>">
+                        <a href="<?= BASE_URL ?>/private/admin/document_types/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('document_types/index.php', $currentPath) ?>">
                             <i class="bi bi-card-text"></i>
                             <span class="menu-//text">Tipos de documento</span>
                         </a>
@@ -159,7 +185,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
 
                 <?php if (hasPermission('CONTACT_TYPE_VIEW')): ?>
                     <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/admin/contactType/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('contactType/index.php', $currentPath) ?>">
+                        <a href="<?= BASE_URL ?>/private/admin/contact_types/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('contact_types/index.php', $currentPath) ?>">
                             <i class="bi bi-person-lines-fill"></i>
                             <span class="menu-text">Tipos de contacto</span>
                         </a>
@@ -177,7 +203,7 @@ $canViewSecurity = hasPermission('USER_VIEW')
 
                 <?php if (hasPermission('USER_VIEW')): ?>
                     <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/entidades/usuarios/index.php" class="nav-link <?= isActiveMenu('usuarios/index.php', $currentPath) ?>">
+                        <a href="<?= BASE_URL ?>/private/admin/users/index.php" class="nav-link <?= isActiveMenu('users/index.php', $currentPath) ?>">
                             <i class="bi bi-person-gear"></i>
                             <span class="menu-text">Usuarios</span>
                         </a>
@@ -195,13 +221,23 @@ $canViewSecurity = hasPermission('USER_VIEW')
 
                 <?php if (hasPermission('PERMISSION_VIEW')): ?>
                     <li class="nav-item">
-                        <a href="<?= BASE_URL ?>/private/admin/permisos/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('permisos/index.php', $currentPath) ?>">
+                        <a href="<?= BASE_URL ?>/private/admin/permissions/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('permissions/index.php', $currentPath) ?>">
                             <i class="bi bi-shield-lock"></i>
                             <span class="menu-text">Permisos</span>
                         </a>
                     </li>
                 <?php endif; ?>
-            <?php endif; ?>
+
+                <?php if (hasPermission('PERMISSION_VIEW')): ?>
+                    <li class="nav-item">
+                        <a href="<?= BASE_URL ?>/private/admin/systems/index.php" class="nav-link nav-link-submenu <?= isActiveMenu('systems/index.php', $currentPath) ?>">
+                            <i class="bi bi-shield-lock"></i>
+                            <span class="menu-text">Sistemas</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php endif; ?>
         </ul>
     </nav>
 </aside>
